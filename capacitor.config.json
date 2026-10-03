@@ -1,0 +1,8 @@
+{
+  "appId": "com.vpair.testseries",
+  "appName": "VP AIR",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
