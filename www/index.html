@@ -1,1 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VP AIR Test Series</title>
+<style>
+  :root{
+    --bg-a:#0A0F1E; --bg-b:#141B33;
+    --card:rgba(255,255,255,0.045); --card-line:rgba(255,255,255,0.09); --card-hover:rgba(255,255,255,0.07);
+    --ink:#F4F6FB; --ink-soft:#8D97B8; --ink-faint:#5C6684;
+    --violet:#7C5CFA; --violet-b:#5A3DE0;
+    --cyan:#22C7D8; --cyan-b:#0FA0AE;
+    --amber:#FFB13D; --amber-b:#F2871A;
+    --green:#3DDC91; --red:#FF6B6B;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  [hidden]{display:none !important;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(1000px 460px at 88% -8%, rgba(124,92,250,0.22), transparent 60%),
+      radial-gradient(720px 400px at 4% 4%, rgba(34,199,216,0.14), transparent 55%),
+      linear-gradient(180deg, var(--bg-a), var(--bg-b) 60%, #0C1122 100%);
+    font-family:var(--sans); color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  body.noscroll{overflow:hidden;}
+  h1,h2,h3,.display{font-family:var(--sans);}
 
+  /* ---------- top bar ---------- */
+  .topbar{max-width:720px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:20px 22px 0;}
+  .left{display:flex; align-items:center; gap:12px;}
+  .menu-btn{
+    width:40px; height:40px; border-radius:12px; flex:none;
+    background:var(--card); border:1px solid var(--card-line); color:var(--ink);
+    display:flex; align-items:center; justify-content:center; padding:0; cursor:pointer;
+  }
+  .menu-btn svg{width:20px; height:20px;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand-mark{
+    width:34px; height:34px; border-radius:10px;
+    background:linear-gradient(135deg, var(--violet), var(--cyan));
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:14px; color:#0A0F1E; flex:none;
+  }
+  .brand span{font-weight:700; font-size:15px; letter-spacing:0.2px;}
+  .live-dot{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-soft);}
+  .live-dot i{width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px rgba(61,220,145,0.18); display:inline-block;}
+
+  /* ---------- home ---------- */
+  header{max-width:720px; margin:0 auto; padding:30px 22px 26px;}
+  .kicker{
+    display:inline-flex; align-items:center; gap:7px;
+    background:rgba(255,177,61,0.1); border:1px solid rgba(255,177,61,0.3);
+    color:var(--amber); padding:6px 13px; border-radius:999px;
+    font-size:12.5px; font-weight:600; margin-bottom:18px;
+  }
+  .kicker svg{width:13px; height:13px;}
+  h1.display{font-size:clamp(30px, 6.5vw, 44px); line-height:1.12; font-weight:800; margin:0 0 14px; letter-spacing:-0.01em;}
+  h1.display .grad{background:linear-gradient(100deg, var(--violet) 10%, var(--cyan) 90%); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  header p.lede{color:var(--ink-soft); font-size:16px; line-height:1.65; max-width:480px; margin:0 0 28px;}
+
+  .metric-row{display:flex; gap:12px; flex-wrap:wrap; margin-bottom:26px;}
+  .metric{background:var(--card); border:1px solid var(--card-line); border-radius:14px; padding:13px 18px; min-width:104px;}
+  .metric b{display:block; font-size:21px; font-weight:700;}
+  .metric span{font-size:12px; color:var(--ink-faint);}
+  .metric-row.fit{flex-wrap:nowrap; gap:10px;}
+  .metric-row.fit .metric{flex:1; min-width:0; padding:13px 12px;}
+
+  .search-shell{background:var(--card); border:1px solid var(--card-line); border-radius:14px; padding:13px 16px; display:flex; align-items:center; gap:10px;}
+  .search-shell svg{width:18px; height:18px; color:var(--ink-faint); flex:none;}
+  .search-shell input{border:none; outline:none; background:transparent; flex:1; color:var(--ink); font-family:var(--sans); font-size:15px;}
+  .search-shell input::placeholder{color:var(--ink-faint);}
+
+  main{max-width:720px; margin:0 auto; padding:8px 22px 40px; display:flex; flex-direction:column; gap:16px;}
+  .card{
+    background:var(--card); border:1px solid var(--card-line); border-radius:20px; padding:22px 20px 20px;
+    transition:background .18s ease, border-color .18s ease;
+    opacity:0; transform:translateY(10px); animation:rise .5s ease forwards;
+  }
+  .card:active{background:var(--card-hover);}
+  @keyframes rise{to{opacity:1; transform:translateY(0);}}
+
+  .card-head{display:flex; align-items:center; gap:12px; margin-bottom:18px;}
+  .idx{
+    width:38px; height:38px; border-radius:11px; flex:none;
+    background:linear-gradient(135deg, var(--violet), var(--violet-b));
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;
+  }
+  .card-head h3{margin:0; font-size:18px; font-weight:700;}
+  .card-head p{margin:2px 0 0; font-size:12.5px; color:var(--ink-faint);}
+  .best{
+    display:inline-block; margin:-6px 0 14px; padding:5px 11px; border-radius:999px;
+    font-size:12px; font-weight:600; color:var(--green);
+    background:rgba(61,220,145,0.1); border:1px solid rgba(61,220,145,0.25);
+  }
+
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:9px;
+    width:100%; padding:14.5px 16px; border-radius:13px; border:none; text-decoration:none;
+    font-family:var(--sans); font-weight:600; font-size:15px; color:#0A0F1E; margin-bottom:10px;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  .btn:last-child{margin-bottom:0;}
+  .btn:active{transform:scale(.985); filter:brightness(1.06);}
+  .btn svg{width:17px; height:17px; flex:none;}
+  .btn-paper{background:linear-gradient(135deg, var(--violet), var(--violet-b)); color:#fff; box-shadow:0 10px 22px -12px rgba(124,92,250,0.55);}
+  .btn-key{background:linear-gradient(135deg, var(--cyan), var(--cyan-b)); color:#052226; box-shadow:0 10px 22px -12px rgba(34,199,216,0.5);}
+  .btn-mock{background:linear-gradient(135deg, var(--amber), var(--amber-b)); color:#2B1400; box-shadow:0 10px 22px -12px rgba(255,177,61,0.5);}
+  .btn.off{opacity:.35; pointer-events:none;}
+
+  .empty-state{display:none; text-align:center; color:var(--ink-faint); padding:40px 10px; font-size:14.5px;}
+  .empty-state.show{display:block;}
+  .author-line{text-align:center; color:var(--ink-faint); font-size:12.5px; padding:0 20px 8px;}
+  .author-line b{color:var(--ink-soft); font-weight:600;}
+  footer{text-align:center; color:var(--ink-faint); font-size:12.5px; padding:0 20px 46px;}
+
+  /* ---------- drawer ---------- */
+  .scrim{position:fixed; inset:0; background:rgba(0,0,0,.58); opacity:0; pointer-events:none; transition:opacity .22s ease; z-index:40;}
+  .scrim.show{opacity:1; pointer-events:auto;}
+  .drawer{
+    position:fixed; top:0; bottom:0; left:0; width:min(80vw, 300px); z-index:50;
+    background:linear-gradient(180deg,#121A35,#0C1226);
+    border-right:1px solid var(--card-line);
+    transform:translateX(-102%); transition:transform .25s ease;
+    display:flex; flex-direction:column; padding:22px 14px 18px;
+  }
+  .drawer.open{transform:translateX(0);}
+  .drawer .d-head{display:flex; align-items:center; gap:11px; padding:4px 8px 22px;}
+  .drawer .d-head b{display:block; font-size:16px;}
+  .drawer .d-head small{color:var(--ink-faint); font-size:12px;}
+  .nav-item{
+    display:flex; align-items:center; gap:13px; width:100%; text-align:left;
+    background:none; border:none; color:var(--ink-soft); font-family:var(--sans); font-size:15px; font-weight:600;
+    padding:13px 12px; border-radius:12px; cursor:pointer; margin-bottom:4px;
+  }
+  .nav-item svg{width:20px; height:20px; flex:none;}
+  .nav-item.active{background:rgba(124,92,250,0.16); color:var(--ink);}
+  .nav-item .count{
+    margin-left:auto; min-width:24px; padding:2px 8px; text-align:center; border-radius:999px;
+    font-size:12px; font-weight:700; background:rgba(255,255,255,0.1); color:var(--ink);
+  }
+  .drawer .d-foot{margin-top:auto; padding:0 10px; font-size:12px; color:var(--ink-faint); line-height:1.6;}
+
+  /* ---------- records ---------- */
+  .rec-wrap{max-width:720px; margin:0 auto; padding:26px 22px 60px;}
+  .page-title{font-size:28px; font-weight:800; margin:0 0 6px; letter-spacing:-0.01em;}
+  .page-sub{color:var(--ink-soft); font-size:14.5px; line-height:1.6; margin:0 0 22px;}
+  .rec-list{display:flex; flex-direction:column; gap:12px;}
+  .rec{
+    background:var(--card); border:1px solid var(--card-line); border-radius:18px; padding:16px 16px 14px;
+    cursor:pointer; transition:background .15s ease;
+  }
+  .rec:active{background:var(--card-hover);}
+  .rec-top{display:flex; justify-content:space-between; gap:12px; align-items:flex-start;}
+  .rec-title{font-size:14.5px; font-weight:700; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .rec-date{font-size:12px; color:var(--ink-faint); white-space:nowrap; padding-top:2px;}
+  .rec-main{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:12px 0 10px;}
+  .rec-score b{font-size:30px; font-weight:800; letter-spacing:-0.02em;}
+  .rec-score span{color:var(--ink-faint); font-size:14px; margin-left:3px;}
+  .rec-score.good b{color:var(--green);} .rec-score.mid b{color:var(--amber);} .rec-score.low b{color:var(--red);}
+  .chips{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
+  .chips i{font-style:normal; font-size:12px; font-weight:700; padding:4px 9px; border-radius:999px;}
+  .chips .g{background:rgba(61,220,145,0.14); color:var(--green);}
+  .chips .r{background:rgba(255,107,107,0.14); color:var(--red);}
+  .chips .s{background:rgba(255,255,255,0.08); color:var(--ink-soft);}
+  .meter{height:6px; border-radius:999px; background:rgba(255,255,255,0.08); overflow:hidden;}
+  .meter span{display:block; height:100%; border-radius:999px; background:linear-gradient(90deg,var(--violet),var(--cyan));}
+  .rec-foot{font-size:12.5px; color:var(--ink-faint); margin-top:10px;}
+  .rec-empty{text-align:center; color:var(--ink-faint); padding:60px 16px; font-size:14.5px; line-height:1.7; background:var(--card); border:1px dashed var(--card-line); border-radius:18px;}
+  .ghost-btn{
+    display:block; width:100%; margin-top:22px; padding:13px; border-radius:13px; cursor:pointer;
+    background:none; color:var(--red); border:1px solid rgba(255,107,107,0.35); font-family:var(--sans); font-size:14px; font-weight:600;
+  }
+
+  /* ---------- detail sheet ---------- */
+  .sheet{
+    position:fixed; inset:0; z-index:60; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    background:linear-gradient(180deg, var(--bg-a), var(--bg-b) 60%, #0C1122 100%);
+    transform:translateY(100%); transition:transform .28s ease;
+  }
+  .sheet.open{transform:translateY(0);}
+  .sheet-bar{
+    position:sticky; top:0; z-index:2; display:flex; align-items:center; gap:12px;
+    padding:12px 16px; background:rgba(10,15,30,0.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--card-line);
+  }
+  .sheet-bar button{width:38px; height:38px; border-radius:11px; border:1px solid var(--card-line); background:var(--card); color:var(--ink); font-size:20px; cursor:pointer; flex:none;}
+  .sheet-bar b{font-size:14.5px; line-height:1.35; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .sheet-body{max-width:720px; margin:0 auto; padding:20px 18px 60px;}
+  .hero{text-align:center; padding:6px 0 4px;}
+  .hero small{display:block; color:var(--ink-faint); font-size:12px; text-transform:uppercase; letter-spacing:.6px;}
+  .hero b{display:block; font-size:50px; font-weight:800; letter-spacing:-0.02em; margin:4px 0 2px;}
+  .hero b.good{color:var(--green);} .hero b.mid{color:var(--amber);} .hero b.low{color:var(--red);}
+  .hero span{color:var(--ink-soft); font-size:13.5px;}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:20px 0;}
+  .box{background:var(--card); border:1px solid var(--card-line); border-radius:14px; padding:13px 8px; text-align:center;}
+  .box b{display:block; font-size:20px; font-weight:800;}
+  .box span{font-size:12px; color:var(--ink-faint);}
+  .box.g b{color:var(--green);} .box.r b{color:var(--red);}
+  .sec{font-size:12px; text-transform:uppercase; letter-spacing:.6px; color:var(--ink-faint); font-weight:700; margin:26px 0 12px;}
+  .subj{background:var(--card); border:1px solid var(--card-line); border-radius:14px; padding:12px 14px; margin-bottom:10px;}
+  .subj-top{display:flex; justify-content:space-between; font-size:14px; font-weight:600; margin-bottom:8px;}
+  .subj-top span{color:var(--ink-soft); font-weight:600;}
+  .qmap{display:grid; grid-template-columns:repeat(auto-fill,minmax(38px,1fr)); gap:6px;}
+  .qmap i{
+    font-style:normal; text-align:center; font-size:11.5px; font-weight:700; padding:8px 0; border-radius:8px;
+  }
+  .qmap .g{background:rgba(61,220,145,0.16); color:var(--green);}
+  .qmap .r{background:rgba(255,107,107,0.16); color:var(--red);}
+  .qmap .s{background:rgba(255,255,255,0.07); color:var(--ink-faint);}
+  .legend{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--ink-faint); margin-top:12px;}
+  .legend i{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px;}
+  .pills{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;}
+  .pill{
+    border:1px solid var(--card-line); background:var(--card); color:var(--ink-soft); font-family:var(--sans);
+    font-size:13px; font-weight:600; padding:8px 14px; border-radius:999px; cursor:pointer;
+  }
+  .pill.on{background:rgba(124,92,250,0.2); border-color:rgba(124,92,250,0.5); color:var(--ink);}
+  .qrow{display:flex; align-items:center; gap:12px; padding:11px 4px; border-bottom:1px solid var(--card-line); font-size:14px;}
+  .qrow .qn{font-weight:700; min-width:50px;}
+  .qrow .qs{color:var(--ink-faint); font-size:12px; flex:1;}
+  .qrow .ans{font-size:12.5px; color:var(--ink-soft); text-align:right; white-space:nowrap;}
+  .qrow .ans em{font-style:normal; font-weight:700;}
+  .qrow .ans .ok{color:var(--green);} .qrow .ans .bad{color:var(--red);}
+  .none{color:var(--ink-faint); font-size:14px; padding:18px 4px;}
+  .danger{
+    display:block; width:100%; margin-top:30px; padding:13px; border-radius:13px; cursor:pointer;
+    background:none; color:var(--red); border:1px solid rgba(255,107,107,0.35); font-family:var(--sans); font-size:14px; font-weight:600;
+  }
+
+  @media (prefers-reduced-motion: reduce){ .card{animation:none; opacity:1; transform:none;} .drawer,.sheet,.scrim{transition:none;} }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="left">
+    <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+    </button>
+    <div class="brand"><div class="brand-mark">VA</div><span>VP AIR</span></div>
+  </div>
+  <div class="live-dot"><i></i> Works offline</div>
+</div>
+
+<!-- ============ HOME ============ -->
+<div id="homeView">
+  <header>
+    <span class="kicker">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3L21 9l-5 4.6L17.3 21 12 17.6 6.7 21 8 13.6 3 9l6.1-.7z"/></svg>
+      Built for AIR rankers
+    </span>
+    <h1 class="display">Practice like it's<br><span class="grad">exam day.</span></h1>
+    <p class="lede">Full test sets &mdash; each with a question paper, answer key, and a live mock test, all saved inside the app.</p>
+
+    <div class="metric-row">
+      <div class="metric"><b id="cPaper">0</b><span>Question papers</span></div>
+      <div class="metric"><b id="cKey">0</b><span>Answer keys</span></div>
+      <div class="metric"><b id="cMock">0</b><span>Mock tests</span></div>
+    </div>
+
+    <div class="search-shell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchBox" type="text" placeholder="Search a set, e.g. 'VP AIR 4'">
+    </div>
+  </header>
+
+  <main id="cardArea"></main>
+  <div class="empty-state" id="emptyState">No set matches that search.</div>
+
+  <div class="author-line">Author: <b>Md Amir Hamza</b></div>
+  <footer>Everything is stored in the app &mdash; no internet needed.</footer>
+</div>
+
+<!-- ============ TEST RECORDS ============ -->
+<section id="recordsView" hidden>
+  <div class="rec-wrap">
+    <h2 class="page-title">Test Records</h2>
+    <p class="page-sub">Every mock test you submit is saved here on this phone. Tap a record to see the full breakdown.</p>
+    <div class="metric-row fit" id="recStats"></div>
+    <div class="rec-list" id="recList"></div>
+    <button class="ghost-btn" id="clearAll" hidden>Clear all records</button>
+  </div>
+</section>
+
+<!-- ============ DRAWER ============ -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="d-head">
+    <div class="brand-mark">VA</div>
+    <div><b>VP AIR</b><small>Test Series</small></div>
+  </div>
+  <button class="nav-item" data-go="home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+    Home
+  </button>
+  <button class="nav-item" data-go="records">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>
+    Test Records
+    <span class="count" id="navCount">0</span>
+  </button>
+  <div class="d-foot">Records are saved on this phone. They are removed if you clear the app's data or uninstall it.<br><br>Author: Md Amir Hamza</div>
+</aside>
+
+<!-- ============ DETAIL SHEET ============ -->
+<div class="sheet" id="sheet" aria-hidden="true">
+  <div class="sheet-bar">
+    <button id="sheetClose" aria-label="Close">&#8592;</button>
+    <b id="sheetTitle"></b>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
+
+<script>
+const iconPaper = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>';
+const iconKey  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>';
+const iconMock = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+
+const KEY = 'vpair_records';
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let sets = [];
+let manifest = {};
+const detail = { id: null, filter: 'wrong' };
+
+/* ---------- records storage ---------- */
+function loadRecs(){
+  try { const a = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(a) ? a : []; }
+  catch(e){ return []; }
+}
+function saveRecs(a){ try { localStorage.setItem(KEY, JSON.stringify(a)); } catch(e){} }
+
+function fmtTime(sec){
+  sec = Math.max(0, sec|0);
+  const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60);
+  return h ? h + 'h ' + m + 'm' : (m || 1) + 'm';
+}
+function fmtDate(ts){
+  return new Date(ts).toLocaleString('en-IN', { day:'numeric', month:'short', year:'numeric', hour:'numeric', minute:'2-digit' });
+}
+function accuracy(r){ const a = r.correct + r.wrong; return a ? Math.round(r.correct / a * 100) : 0; }
+function tone(r){ const p = r.score / r.max; return p >= 0.6 ? 'good' : p >= 0.3 ? 'mid' : 'low'; }
+function recTitle(r){ return r.title || ('VP AIR Test ' + (r.set || '')); }
+
+/* ---------- home ---------- */
+function openHref(path, title){
+  if(!path) return '#';
+  if(path.toLowerCase().endsWith('.pdf')){
+    return 'pdf-viewer.html?f=' + encodeURIComponent(path) + '&t=' + encodeURIComponent(title);
+  }
+  return path;
+}
+function btn(cls, icon, label, path, title){
+  return '<a class="btn ' + cls + (path ? '' : ' off') + '" href="' + openHref(path, title) + '">' + icon + ' ' + label + '</a>';
+}
+function cardHTML(s, i){
+  const m = manifest[String(s.n)] || {};
+  const t = 'VP AIR Test ' + s.n;
+  const mine = loadRecs().filter(r => r.set === s.n);
+  let best = '';
+  if(mine.length){
+    const top = mine.reduce((a, b) => b.score > a.score ? b : a);
+    best = '<div class="best">Best ' + top.score + '/' + top.max + ' &middot; ' + mine.length + (mine.length === 1 ? ' attempt' : ' attempts') + '</div>';
+  }
+  return `
+  <div class="card" style="animation-delay:${i * 0.04}s">
+    <div class="card-head">
+      <div class="idx">${s.n}</div>
+      <div>
+        <h3>${t}</h3>
+        <p>Question Paper &middot; Answer Key &middot; Mock Test</p>
+      </div>
+    </div>
+    ${best}
+    ${btn('btn-paper', iconPaper, 'Question Paper', m.paper, t + ' - Question Paper')}
+    ${btn('btn-key', iconKey, 'Answer Key', m.key, t + ' - Answer Key')}
+    ${btn('btn-mock', iconMock, 'Start Mock Test', m.mock, t + ' - Mock Test')}
+  </div>`;
+}
+function renderCards(list){
+  $('cardArea').innerHTML = list.map(cardHTML).join('');
+  $('emptyState').classList.toggle('show', list.length === 0);
+}
+$('searchBox').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  if(!q){ renderCards(sets); return; }
+  renderCards(sets.filter(s => ('vp air ' + s.n).includes(q) || String(s.n) === q));
+});
+
+/* ---------- records list ---------- */
+function renderRecords(){
+  const all = loadRecs().slice().sort((a, b) => b.ts - a.ts);
+  $('navCount').textContent = all.length;
+  $('clearAll').hidden = all.length === 0;
+
+  if(!all.length){
+    $('recStats').innerHTML = '';
+    $('recList').innerHTML = '<div class="rec-empty">No tests submitted yet.<br>Finish a mock test and press <b>Submit Test</b> &mdash; your result will appear here automatically.</div>';
+    return;
+  }
+  const best = Math.max.apply(null, all.map(r => r.score));
+  const avg = Math.round(all.reduce((s, r) => s + r.score, 0) / all.length);
+  $('recStats').innerHTML =
+    '<div class="metric"><b>' + all.length + '</b><span>Tests taken</span></div>' +
+    '<div class="metric"><b>' + best + '</b><span>Best score</span></div>' +
+    '<div class="metric"><b>' + avg + '</b><span>Average score</span></div>';
+
+  $('recList').innerHTML = all.map(r => {
+    const pct = Math.max(0, Math.min(100, Math.round(r.score / r.max * 100)));
+    return '<div class="rec" data-id="' + r.id + '">' +
+      '<div class="rec-top"><div class="rec-title">' + esc(recTitle(r)) + '</div><div class="rec-date">' + esc(fmtDate(r.ts)) + '</div></div>' +
+      '<div class="rec-main"><div class="rec-score ' + tone(r) + '"><b>' + r.score + '</b><span>/ ' + r.max + '</span></div>' +
+      '<div class="chips"><i class="g">&#10003; ' + r.correct + '</i><i class="r">&#10007; ' + r.wrong + '</i><i class="s">&ndash; ' + r.skipped + '</i></div></div>' +
+      '<div class="meter"><span style="width:' + pct + '%"></span></div>' +
+      '<div class="rec-foot">Accuracy ' + accuracy(r) + '% &middot; Time taken ' + fmtTime(r.timeSec) + '</div>' +
+    '</div>';
+  }).join('');
+}
+$('recList').addEventListener('click', e => {
+  const el = e.target.closest('.rec');
+  if(el) openDetail(Number(el.dataset.id));
+});
+$('clearAll').addEventListener('click', () => {
+  if(confirm('Delete ALL saved test records? This cannot be undone.')){
+    saveRecs([]); renderAll();
+  }
+});
+
+/* ---------- detail sheet ---------- */
+function verdict(q){ return q[2] === 0 ? 's' : (q[2] === q[3] ? 'g' : 'r'); }
+
+function renderDetail(){
+  const r = loadRecs().find(x => x.id === detail.id);
+  if(!r){ closeSheetVisual(); return; }
+  $('sheetTitle').textContent = recTitle(r);
+
+  const names = r.subjects || [];
+  const subj = names.map((n, i) => {
+    const pct = r.subjMax[i] ? Math.max(0, Math.round(r.subj[i] / r.subjMax[i] * 100)) : 0;
+    return '<div class="subj"><div class="subj-top">' + esc(n) + '<span>' + r.subj[i] + ' / ' + r.subjMax[i] + '</span></div>' +
+           '<div class="meter"><span style="width:' + pct + '%"></span></div></div>';
+  }).join('');
+
+  const qmap = r.qs.map(q => '<i class="' + verdict(q) + '">' + q[0] + '</i>').join('');
+
+  const f = detail.filter;
+  const rows = r.qs.filter(q => f === 'all' || (f === 'wrong' && verdict(q) === 'r') || (f === 'skipped' && verdict(q) === 's') || (f === 'correct' && verdict(q) === 'g'));
+  const rowsHTML = rows.length ? rows.map(q => {
+    const v = verdict(q);
+    const yours = q[2] ? '<em class="' + (v === 'g' ? 'ok' : 'bad') + '">(' + q[2] + ')</em>' : '<em>&mdash;</em>';
+    return '<div class="qrow"><span class="qn">Q' + q[0] + '</span><span class="qs">' + esc(names[q[1]] || '') + '</span>' +
+           '<span class="ans">You ' + yours + ' &nbsp;|&nbsp; Correct <em class="ok">(' + q[3] + ')</em></span></div>';
+  }).join('') : '<div class="none">Nothing to show in this filter.</div>';
+
+  const pill = (k, label) => '<button class="pill' + (f === k ? ' on' : '') + '" data-f="' + k + '">' + label + '</button>';
+
+  $('sheetBody').innerHTML =
+    '<div class="hero"><small>Your score &middot; ' + esc(fmtDate(r.ts)) + '</small><b class="' + tone(r) + '">' + r.score + '</b><span>out of ' + r.max + '</span></div>' +
+    '<div class="grid3">' +
+      '<div class="box g"><b>' + r.correct + '</b><span>Correct</span></div>' +
+      '<div class="box r"><b>' + r.wrong + '</b><span>Wrong</span></div>' +
+      '<div class="box"><b>' + r.skipped + '</b><span>Skipped</span></div>' +
+    '</div>' +
+    '<div class="grid3">' +
+      '<div class="box"><b>' + accuracy(r) + '%</b><span>Accuracy</span></div>' +
+      '<div class="box"><b>' + fmtTime(r.timeSec) + '</b><span>Time taken</span></div>' +
+      '<div class="box"><b>' + (r.correct + r.wrong) + '</b><span>Attempted</span></div>' +
+    '</div>' +
+    '<div class="sec">Subject-wise marks</div>' + subj +
+    '<div class="sec">Question map</div><div class="qmap">' + qmap + '</div>' +
+    '<div class="legend"><span><i style="background:var(--green)"></i>Correct</span><span><i style="background:var(--red)"></i>Wrong</span><span><i style="background:#3b4466"></i>Skipped</span></div>' +
+    '<div class="sec">Question-wise answers</div>' +
+    '<div class="pills">' + pill('wrong','Wrong') + pill('skipped','Skipped') + pill('correct','Correct') + pill('all','All') + '</div>' +
+    rowsHTML +
+    '<button class="danger" id="delRec">Delete this record</button>';
+}
+$('sheetBody').addEventListener('click', e => {
+  const p = e.target.closest('.pill');
+  if(p){ detail.filter = p.dataset.f; const y = $('sheet').scrollTop; renderDetail(); $('sheet').scrollTop = y; return; }
+  if(e.target.id === 'delRec'){
+    if(confirm('Delete this record?')){
+      saveRecs(loadRecs().filter(x => x.id !== detail.id));
+      closeOverlay(); renderAll();
+    }
+  }
+});
+
+/* ---------- overlays (drawer + sheet) and the phone's back button ---------- */
+function closeDrawerVisual(){ $('drawer').classList.remove('open'); $('scrim').classList.remove('show'); $('drawer').setAttribute('aria-hidden', 'true'); }
+function closeSheetVisual(){ $('sheet').classList.remove('open'); $('sheet').setAttribute('aria-hidden', 'true'); document.body.classList.remove('noscroll'); }
+function anyOverlayOpen(){ return $('drawer').classList.contains('open') || $('sheet').classList.contains('open'); }
+function closeOverlay(){
+  if(history.state && history.state.ov){ history.back(); }
+  else { closeDrawerVisual(); closeSheetVisual(); }
+}
+function openDrawer(){
+  history.pushState({ ov: 1 }, '');
+  $('drawer').classList.add('open'); $('scrim').classList.add('show'); $('drawer').setAttribute('aria-hidden', 'false');
+}
+function openDetail(id){
+  detail.id = id; detail.filter = 'wrong';
+  history.pushState({ ov: 1 }, '');
+  renderDetail();
+  $('sheet').scrollTop = 0;
+  $('sheet').classList.add('open'); $('sheet').setAttribute('aria-hidden', 'false'); document.body.classList.add('noscroll');
+}
+$('menuBtn').addEventListener('click', openDrawer);
+$('scrim').addEventListener('click', closeOverlay);
+$('sheetClose').addEventListener('click', closeOverlay);
+
+document.querySelectorAll('.nav-item').forEach(b => b.addEventListener('click', () => {
+  const target = b.dataset.go === 'records' ? '#records' : location.pathname + location.search;
+  closeDrawerVisual();
+  history.replaceState(null, '', target);   // replaces the drawer's history entry
+  route();
+}));
+
+/* ---------- routing between Home and Test Records ---------- */
+function route(){
+  const v = location.hash === '#records' ? 'records' : 'home';
+  $('homeView').hidden = v !== 'home';
+  $('recordsView').hidden = v !== 'records';
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.go === v));
+  window.scrollTo(0, 0);
+}
+window.addEventListener('popstate', () => { closeDrawerVisual(); closeSheetVisual(); route(); });
+
+function renderAll(){
+  renderRecords();
+  renderCards(sets.filter(s => !$('searchBox').value.trim() || ('vp air ' + s.n).includes($('searchBox').value.trim().toLowerCase())));
+  if($('sheet').classList.contains('open')) renderDetail();
+}
+
+/* ---------- start ---------- */
+(function arrive(){
+  try {
+    const g = sessionStorage.getItem('vpair_goto');
+    if(g){ sessionStorage.removeItem('vpair_goto'); history.replaceState(null, '', location.pathname + '#' + g); }
+  } catch(e){}
+  route();
+})();
+
+window.addEventListener('pageshow', e => { if(e.persisted){ closeDrawerVisual(); closeSheetVisual(); route(); renderAll(); } });
+
+fetch('files/manifest.json')
+  .then(r => r.ok ? r.json() : {})
+  .catch(() => ({}))
+  .then(m => {
+    manifest = m;
+    sets = Object.keys(m).map(Number).sort((a, b) => a - b).map(n => ({ n }));
+    const count = k => sets.filter(s => m[String(s.n)][k]).length;
+    $('cPaper').textContent = count('paper');
+    $('cKey').textContent = count('key');
+    $('cMock').textContent = count('mock');
+    renderAll();
+  });
+renderRecords();
+</script>
+</body>
+</html>
