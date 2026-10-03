@@ -1,0 +1,52 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install tools
+        run: npm install
+
+      - name: Prepare papers, keys and mock tests
+        run: python scripts/build_manifest.py
+
+      - name: Add PDF viewer library
+        run: |
+          mkdir -p www/pdfjs
+          cp node_modules/pdfjs-dist/build/pdf.min.js www/pdfjs/
+          cp node_modules/pdfjs-dist/build/pdf.worker.min.js www/pdfjs/
+
+      - name: Create Android project
+        run: |
+          npx cap add android
+          npx cap sync android
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VP-AIR-app
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          
