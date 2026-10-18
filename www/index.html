@@ -98,15 +98,15 @@
     background:rgba(61,220,145,0.1); border:1px solid rgba(61,220,145,0.25);
   }
 
+  .btn-row{display:flex; gap:10px;}
   .btn{
-    display:flex; align-items:center; justify-content:center; gap:9px;
-    width:100%; padding:14.5px 16px; border-radius:13px; border:none; text-decoration:none;
-    font-family:var(--sans); font-weight:600; font-size:15px; color:#0A0F1E; margin-bottom:10px;
+    display:flex; align-items:center; justify-content:center;
+    flex:1 1 0; min-width:0; padding:14.5px 8px; border-radius:13px; border:none; text-decoration:none;
+    font-family:var(--sans); font-weight:600; font-size:15px; color:#0A0F1E;
     transition:transform .15s ease, filter .15s ease;
   }
-  .btn:last-child{margin-bottom:0;}
-  .btn:active{transform:scale(.985); filter:brightness(1.06);}
-  .btn svg{width:17px; height:17px; flex:none;}
+  .btn:active{transform:scale(.97); filter:brightness(1.06);}
+  .btn svg{width:24px; height:24px; flex:none;}
   .btn-paper{background:linear-gradient(135deg, var(--violet), var(--violet-b)); color:#fff; box-shadow:0 10px 22px -12px rgba(124,92,250,0.55);}
   .btn-key{background:linear-gradient(135deg, var(--cyan), var(--cyan-b)); color:#052226; box-shadow:0 10px 22px -12px rgba(34,199,216,0.5);}
   .btn-mock{background:linear-gradient(135deg, var(--amber), var(--amber-b)); color:#2B1400; box-shadow:0 10px 22px -12px rgba(255,177,61,0.5);}
@@ -355,7 +355,7 @@ function openHref(path, title){
   return path;
 }
 function btn(cls, icon, label, path, title){
-  return '<a class="btn ' + cls + (path ? '' : ' off') + '" href="' + openHref(path, title) + '">' + icon + ' ' + label + '</a>';
+  return '<a class="btn ' + cls + (path ? '' : ' off') + '" href="' + openHref(path, title) + '" aria-label="' + label + '" title="' + label + '">' + icon + '</a>';
 }
 function cardHTML(s, i){
   const m = manifest[String(s.n)] || {};
@@ -376,9 +376,11 @@ function cardHTML(s, i){
       </div>
     </div>
     ${best}
-    ${btn('btn-paper', iconPaper, 'Question Paper', m.paper, t + ' - Question Paper')}
-    ${btn('btn-key', iconKey, 'Answer Key', m.key, t + ' - Answer Key')}
-    ${btn('btn-mock', iconMock, 'Start Mock Test', m.mock, t + ' - Mock Test')}
+    <div class="btn-row">
+      ${btn('btn-paper', iconPaper, 'Question Paper', m.paper, t + ' - Question Paper')}
+      ${btn('btn-key', iconKey, 'Answer Key', m.key, t + ' - Answer Key')}
+      ${btn('btn-mock', iconMock, 'Start Mock Test', m.mock, t + ' - Mock Test')}
+    </div>
   </div>`;
 }
 function renderCards(list){
