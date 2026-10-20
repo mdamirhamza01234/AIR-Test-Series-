@@ -6,7 +6,8 @@
   "dependencies": {
     "@capacitor/android": "^6.1.2",
     "@capacitor/core": "^6.1.2",
-    "pdfjs-dist": "3.11.174"
+    "pdfjs-dist": "3.11.174",
+    "@capacitor/app": "^6.0.2"
   },
   "devDependencies": {
     "@capacitor/cli": "^6.1.2"
